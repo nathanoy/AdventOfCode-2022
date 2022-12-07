@@ -1,5 +1,7 @@
 FILE_NAME = "./input.txt"
 
+import json
+
 
 def part1():
     with open(FILE_NAME, "r") as src:
