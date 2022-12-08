@@ -1,5 +1,7 @@
+import PIL
 from PIL import Image
 import numpy as np
+from PIL.Image import Resampling
 
 FILE = "input.txt"
 
@@ -71,8 +73,8 @@ def part2():
     array = np.empty((len(score_map), len(score_map[0]), 3))
     for idx, row in enumerate(score_map):
         for i, cell in enumerate(row):
-            z = 0 if cell == 0 else round(m / cell)
-            row[i] = (z, z, z) if cell != m else (255, 0, 0)
+            z = 0 if cell == 0 else round((cell / m) * 255)
+            row[i] = (0, z, 0) if cell != m else (255, 0, 0)
         array[idx] = np.array(row)
     Image.fromarray(array.astype("uint8"), "RGB").save("score_map.png")
 
@@ -83,14 +85,17 @@ def part2():
     array = np.empty((len(score_map), len(score_map[0]), 3))
     for idx, row in enumerate(score_map):
         for i, cell in enumerate(row):
-            z = 0 if cell == 0 else round(m / cell)
-            row[i] = (z, z, z) if cell != m else (255, 0, 0)
+            z = 0 if cell == 0 else round((cell / m) * 255)
+            row[i] = (z, z, z)
         array[idx] = np.array(row)
-    Image.fromarray(array.astype("uint8"), "RGB").save("height_map.png")
+    img = Image.fromarray(array.astype("uint8"), "RGB")
+    img.save("height_map.png")
+    img_upscale = img.resize((img.size[0] * 10, img.size[1] * 10), resample=Resampling.BOX)
+    img_upscale.save("height_map_upscaled.png")
 
 
 def solution():
-    part1()
+    # part1()
     part2()
 
 
