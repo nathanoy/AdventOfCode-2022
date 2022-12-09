@@ -30,19 +30,19 @@ def part1():
 
             self.visited = set()
 
-        def move(self, direction):
-            steps = 1  # move is called multiple times
-            match direction:
+        def move(self, _direction):
+            _step = 1  # move is called multiple times
+            match _direction:
                 case "R":
-                    self.cords_head.x += steps
+                    self.cords_head.x += _step
                 case "L":
-                    self.cords_head.x -= steps
+                    self.cords_head.x -= _step
                 case "U":
-                    self.cords_head.y += steps
+                    self.cords_head.y += _step
                 case "D":
-                    self.cords_head.y -= steps
+                    self.cords_head.y -= _step
                 case _:
-                    assert False, f"{direction!r} as direction is invalid"
+                    assert False, f"{_direction!r} as direction is invalid"
 
             self.follow()
 
@@ -108,14 +108,6 @@ def part1():
 
 def part2():
     @dataclasses.dataclass
-    class Cord:
-        x: int
-        y: int
-
-        def __repr__(self):
-            return f"({self.x},{self.y})"
-
-    @dataclasses.dataclass
     class Tail:
         x: int
         y: int
@@ -142,33 +134,35 @@ def part2():
         def cords_head(self):
             return self.tail[0]
 
-        def move(self, direction):
-            steps = 1  # move is called multiple times
-            match direction:
+        def move(self, _direction):
+            _steps = 1  # move is called multiple times
+            match _direction:
                 case "R":
-                    self.cords_head.x += steps
+                    self.cords_head.x += _steps
                 case "L":
-                    self.cords_head.x -= steps
+                    self.cords_head.x -= _steps
                 case "U":
-                    self.cords_head.y += steps
+                    self.cords_head.y += _steps
                 case "D":
-                    self.cords_head.y -= steps
+                    self.cords_head.y -= _steps
                 case _:
-                    assert False, f"{direction!r} as direction is invalid"
+                    assert False, f"{_direction!r} as direction is invalid"
 
             self.follow()
 
             self.update_visited()
 
             self.update_max()
-            # assert not r.has_to_follow(), "Impossible"
 
         def update_visited(self):
             self.visited.add((self.tail[-1].x, self.tail[-1].y))
 
         def update_max(self):
+            """Only required to adjust the screen size, when printing"""
+
             self.max_x = max(self.cords_head.x + 4, self.max_x)
             self.max_y = max(self.cords_head.y + 4, self.max_y)
+            # TODO: for the negative side too, currently just mirrors the max_A side into the negative
 
         def follow(self):
             for h, t in pairwise(self.tail):
@@ -183,12 +177,14 @@ def part2():
                     t.y += 1
                 if h.y < t.y:
                     t.y -= 1
+                assert not r.has_to_follow(h, t), "Impossible, just moved. The rope just ripped apart"
 
-        def has_to_follow(self, h, t):
-            # h, t = self.cords_head, self.cords_tail
+        @staticmethod
+        def has_to_follow(h, t):
             return not (((h.x - 1) <= t.x <= (h.x + 1)) and ((h.y - 1) <= t.y <= (h.y + 1)))
 
         def print(self):
+            # TODO: lower bound, see self.update_max
             for y in range(self.max_y - 1, -self.max_y - 1, -1):
                 for x in range(-self.max_x, self.max_x):
                     if x == self.cords_head.x and y == self.cords_head.y:
@@ -199,23 +195,18 @@ def part2():
                         if x == p.x and y == p.y:
                             print(p.name, end="")
                             break
-                    else:
+                    else:  # when did not break => no letter printed for this coordinate
                         print(".", end="")
-
                 print()
             print()
 
     data = parse_raw()
     r = Rope()
 
-    # r.print()
     for direction, steps in data:
         for _ in range(steps):
             r.move(direction)
-            # print(r.tail)
-            # print(r)
-        # r.print()
-    # print(r.visited)
+        # r.print()  # use to get the output like in the challenge example
     print(len(r.visited))
 
 
