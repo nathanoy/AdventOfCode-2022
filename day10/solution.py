@@ -47,7 +47,6 @@ def part2():
     _X = 1
     cycle = []
     for instruction, value in parse_raw():
-        # print(instruction, value)
         match instruction:
             case "noop":
                 cycle.append(_X)
@@ -58,20 +57,11 @@ def part2():
             case _:
                 assert False, "WHAT?"
 
-    # stren = []
-    # for i, v in enumerate(cycle, start=1):
-    #
-    #     if (i + 20) % 40 == 0:
-    #         # print(f"{i}: x = {v}, {i * v}")
-    #         stren.append(i * v)
-    # print(sum(stren))
-
     for i, v in enumerate(cycle, start=1):
-        x = (i - 1) % 40
-        if v in range(x - 1, x + 2):
-            print("#", end="")
-        else:
-            print(".", end="")
+        x = (i - 1) % 40  # x is the horizontal index
+
+        print("#" if v in range(x - 1, x + 2) else ".", end="")
+
         if i % 40 == 0:
             print()
 
