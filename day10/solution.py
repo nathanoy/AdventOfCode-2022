@@ -1,7 +1,7 @@
 FILE = "./input.txt"
 
 
-def parse_raw():
+def parse_raw(file_name=FILE):
     print("Parsing")
 
     def parse_line(_line):
@@ -11,7 +11,7 @@ def parse_raw():
 
         return _line, None
 
-    with open(FILE, "r") as src:
+    with open(file_name, "r") as src:
         for line in src:
             line = line.rstrip()
             if not line:
@@ -43,10 +43,10 @@ def part1():
     print(sum(stren))
 
 
-def part2():
+def part2(filename):
     _X = 1
     cycle = []
-    for instruction, value in parse_raw():
+    for instruction, value in parse_raw(filename):
         match instruction:
             case "noop":
                 cycle.append(_X)
@@ -60,7 +60,7 @@ def part2():
     for i, v in enumerate(cycle, start=1):
         x = (i - 1) % 40  # x is the horizontal index
 
-        print("#" if v in range(x - 1, x + 2) else ".", end="")
+        print("███" if v in range(x - 1, x + 2) else " . ", end="")
 
         if i % 40 == 0:
             print()
@@ -68,7 +68,7 @@ def part2():
 
 def solution():
     part1()
-    part2()
+    part2(FILE)
 
 
 if __name__ == '__main__':
