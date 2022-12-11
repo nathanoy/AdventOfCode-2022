@@ -1,11 +1,8 @@
-import cProfile
 import dataclasses
-import pprint
-import pstats
 import re
 import typing
 
-FILE = "./example.txt"
+FILE = "./input.txt"
 
 
 @dataclasses.dataclass
@@ -17,11 +14,12 @@ class Monkey:
     test_false: int
     items: list[int]
 
-    op_val: int = 0
+    inspec_count: int = 0
 
+    # PART2 speed improvement, exec_op() also worked in a reasonable amount of time
+    op_val: int = 0
     op_fn: typing.Callable = None
     operator: str = ""
-    inspec_count: int = 0
 
     def perform(self, val):
         return self.op_fn(val, self.op_val)
@@ -72,14 +70,14 @@ def parse_raw(file_name=FILE):
         yield d["_id"], m
 
 
-def part1():
-    def exec_op(_op, v):
-        d = {"old": v, }
-        exec(_op, d)
-        return d["new"]
+def exec_op(_op, v):
+    d = {"old": v, }
+    exec(_op, d)
+    return d["new"]
 
+
+def part1():
     data: dict[int, Monkey] = dict(parse_raw())
-    print(data)
     # round
     for _ in range(20):
         for _id, monkey in data.items():
@@ -94,28 +92,30 @@ def part1():
                     data[monkey.test_false].items.append(val)
     lst = [m.inspec_count for m in data.values()]
     lst.sort()
-    print(lst)
     max1, max2 = lst.pop(), lst.pop()
     print(max1 * max2)
 
 
 def part2():
     data: dict[int, Monkey] = dict(parse_raw())
-
-    for round_num in range(1000):
+    const = 1
+    for m in data.values():
+        const *= m.test
+    for round_num in range(10000):
         for _id, monkey in data.items():
             for _ in range(len(monkey.items)):
                 val = monkey.items.pop(0)
                 val = monkey.perform(val)
+                # val = exec_op(monkey.op, val)
                 monkey.inspec_count += 1
 
-                val = val % monkey.test
+                val = val % const
                 if (val % monkey.test) == 0:
                     data[monkey.test_true].items.append(val)
                 else:
                     data[monkey.test_false].items.append(val)
     lst = [m.inspec_count for m in data.values()]
-    print(lst)
+    # print(lst)
     lst.sort()
     max1, max2 = lst.pop(), lst.pop()
     print(max1 * max2)
@@ -123,16 +123,8 @@ def part2():
 
 
 def solution():
-    # part1()
+    part1()
     part2()
-    # with cProfile.Profile() as pr:
-    #     data = part2()
-    #
-    # stats = pstats.Stats(pr)
-    # stats.sort_stats(pstats.SortKey.TIME)
-    # stats.print_stats()
-    #
-    # pprint.pprint(data)
 
 
 if __name__ == '__main__':
