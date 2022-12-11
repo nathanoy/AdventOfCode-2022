@@ -33,6 +33,12 @@ FN_S = [
 ]
 
 
+def convert_to_function(op):
+    loc = dict()
+    exec(f"""def fn(old):{op};return new""", {}, loc)
+    return loc["fn"]
+
+
 def parse_raw(file_name=FILE):
     # print("Parsing")
 
